@@ -25,9 +25,10 @@
                   <form method="POST" enctype="multipart/form-data" action="{% url 'contacts:load_contact' %}">
                       {% csrf_token %}
                       <ul>
-                          <li  style="text-align:left">File</li><input type="file" name="excel">
+                          <li  class="list_row" style="text-align:left">File</li>
+                          <input type="file" class="form-control" name="excel">
                       </ul>
-                      <button type="submit" id="btn_upload">Upload</button>
+                      <button type="submit" id="btn_upload" class="primary_btn">Upload</button>
                   </form>
               </div>
           </div>
