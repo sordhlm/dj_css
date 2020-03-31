@@ -60,23 +60,23 @@
             {% if request.user.is_superuser or request.user.role == 'ADMIN' %}
             <a class="dropdown-toggle navbar-brand" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false" style="color:#44535c">
-            Django CRM
+            Django CSM
             </a>
             {% else %}
             {% if request.user.has_sales_access and request.user.has_marketing_access %}
             <a class="dropdown-toggle navbar-brand" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false" style="color:#44535c">
-            Django CRM
+            Django CSM
             </a>
             {% elif request.user.has_sales_access and not request.user.has_marketing_access %}
             <a class="navbar-brand" href="{% url 'common:home' %}" role="button" id="dropdownMenuLink" data-toggle=""
             aria-haspopup="true" aria-expanded="false" style="color:#44535c">
-            Django CRM
+            Django CSM
             </a>
             {% elif not request.user.has_sales_access and request.user.has_marketing_access %}
             <a class="navbar-brand" href="{% url 'marketing:dashboard' %}" role="button" id="dropdownMenuLink" data-toggle=""
             aria-haspopup="true" aria-expanded="false" style="color:#44535c">
-            Django CRM
+            Django CSM
             </a>
             {% else %}
             {{''}}
