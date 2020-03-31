@@ -91,7 +91,7 @@ DATABASES = {
 }
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
-STATICFILES_DIRS.append(os.path.join(BASE_DIR, '..', 'node_modules').replace('\\', '/'))
+STATICFILES_DIRS.append(os.path.join(BASE_DIR, 'node_modules').replace('\\', '/'))
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -153,7 +153,7 @@ if STORAGE_TYPE == 'normal':
     MEDIA_URL = '/media/'
 
     STATIC_URL = '/static/'
-    STATICFILES_DIRS = (BASE_DIR + '/static',os.path.join(BASE_DIR, '..', 'node_modules').replace('\\', '/'),)
+    STATICFILES_DIRS = (BASE_DIR + '/static',BASE_DIR+'/node_modules',)
     COMPRESS_ROOT = BASE_DIR + '/static/'
 
 elif STORAGE_TYPE == 's3-storage':
