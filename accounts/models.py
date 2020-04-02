@@ -56,7 +56,7 @@ class Account(models.Model):
     created_by = models.ForeignKey(
         User, related_name='account_created_by',
         on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(_("Created on"))
+    created_on = models.DateTimeField(_("Created on"), auto_now_add=True)
     is_active = models.BooleanField(default=False)
     price = models.FloatField(null=True)
     tags = models.ManyToManyField(Tags, blank=True)
@@ -89,7 +89,6 @@ class Account(models.Model):
         suite = cls.objects.create(
             name=values['account'],
             created_by=values['user'],
-            created_on=values['create_on'],
             price=values['price'],
             contacts=values['contact']
         )
