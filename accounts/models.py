@@ -90,7 +90,7 @@ class Account(models.Model):
             name=values['account'],
             created_by=values['user'],
             price=values['price'],
-            contacts=values['contact']
+            contacts=values['contacts']
         )
         return suite
 

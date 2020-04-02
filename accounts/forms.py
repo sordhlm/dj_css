@@ -21,39 +21,20 @@ class AccountForm(forms.ModelForm):
         self.fields['status'].choices = [
             (each[0], each[1]) for each in Account.ACCOUNT_STATUS_CHOICE]
         self.fields['status'].required = False
-        #for key, value in self.fields.items():
-        #    if key == 'phone':
-        #        value.widget.attrs['placeholder'] = "+911234567890"
-        #    else:
-        #        value.widget.attrs['placeholder'] = value.label
-
-        #self.fields['billing_address_line'].widget.attrs.update({
-        #    'placeholder': 'Address Line'})
-        #self.fields['billing_street'].widget.attrs.update({
-        #    'placeholder': 'Street'})
-        #self.fields['billing_city'].widget.attrs.update({
-        #    'placeholder': 'City'})
-        #self.fields['billing_state'].widget.attrs.update({
-        #    'placeholder': 'State'})
-        #self.fields['billing_postcode'].widget.attrs.update({
-        #    'placeholder': 'Postcode'})
-        #self.fields["billing_country"].choices = [
-        #    ("", "--Country--"), ] + list(self.fields["billing_country"].choices)[1:]
-        # self.fields["lead"].queryset = Lead.objects.all(
-        # ).exclude(status='closed')
-        if request_user.role == 'ADMIN':
-            self.fields["lead"].queryset = Lead.objects.filter().exclude(
-                status='closed').order_by('title')
-            self.fields["contacts"].queryset = Contact.objects.filter()
-            self.fields["teams"].choices = [(team.get('id'), team.get('name')) for team in Teams.objects.all().values('id', 'name')]
-            self.fields["teams"].required = False
-        else:
-            self.fields["lead"].queryset = Lead.objects.filter(
-                Q(assigned_to__in=[request_user]) | Q(created_by=request_user)).exclude(status='closed').order_by('title')
-            self.fields["contacts"].queryset = Contact.objects.filter(
-                Q(assigned_to__in=[request_user]) | Q(created_by=request_user))
-            self.fields["teams"].required = False
-        self.fields['price'].required = True
+        if request_user:
+            if request_user.role == 'ADMIN':
+                self.fields["lead"].queryset = Lead.objects.filter().exclude(
+                    status='closed').order_by('title')
+                self.fields["contacts"].queryset = Contact.objects.filter()
+                self.fields["teams"].choices = [(team.get('id'), team.get('name')) for team in Teams.objects.all().values('id', 'name')]
+                self.fields["teams"].required = False
+            else:
+                self.fields["lead"].queryset = Lead.objects.filter(
+                    Q(assigned_to__in=[request_user]) | Q(created_by=request_user)).exclude(status='closed').order_by('title')
+                self.fields["contacts"].queryset = Contact.objects.filter(
+                    Q(assigned_to__in=[request_user]) | Q(created_by=request_user))
+                self.fields["teams"].required = False
+            self.fields['price'].required = True
         self.fields['assigned_to'].required = False
         #if account_view:
         #    self.fields['billing_address_line'].required = True
@@ -67,6 +48,7 @@ class AccountForm(forms.ModelForm):
         if self.instance.id:
             self.fields['lead'].required = False
         self.fields['lead'].required = False
+        self.fields["teams"].required = False
 
     class Meta:
         model = Account

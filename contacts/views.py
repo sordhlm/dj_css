@@ -1,5 +1,6 @@
 import json
 import xlrd
+import re
 import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
@@ -45,7 +46,7 @@ class ContactsListView(SalesAccessRequiredMixin, LoginRequiredMixin, TemplateVie
     template_name = "contacts.html"
 
     def get_queryset(self):
-        queryset = self.model.objects.all().order_by('-created_on')
+        queryset = self.model.objects.all().order_by('-consumption')
         if (self.request.user.role != "ADMIN" and not
                 self.request.user.is_superuser):
             queryset = queryset.filter(
@@ -101,8 +102,16 @@ def gen_form_data(pos, values):
         #if 'create_on' in key:
         #    print(key, val, values[val])
         #    ret[key] = datetime.datetime.strptime(values[val],'%Y-%m-%d %H:%M:%S')
+        re_com = re.compile(r'^[0-9]+')
         if 'phone' in key:
-            ret[key] = '+86' + values[val]
+            #print(values[val])
+            tmp = str(values[val])
+            m = re_com.match(tmp)
+            if m:
+                ret[key] = '+86' + m[0]
+            else:
+                ret[key] = ''
+            print(ret[key])
         else:
             ret[key] = values[val]
     return ret
@@ -126,28 +135,44 @@ def gen_pos(titles):
                 ret[val] = titles.index(title)
     return ret
 
+def assing_merge_cell(row, sheet):
+    merge_cells = sheet.merged_cells
+    new_row = sheet.row_values(row)
+    for (rlow, rhigh, clow, chigh) in merge_cells:
+        value_mg_cell = sheet.cell_value(rlow, clow)
+        if row in range(rlow, rhigh):
+            for n in range(clow, chigh):
+                new_row[n] = value_mg_cell 
+    return new_row
+
 def load_contact_from_excel(request):
     if request.method == 'POST':
         excel_file = request.FILES.get('excel')
         data = xlrd.open_workbook(filename=None, file_contents=excel_file.read())
+        print(data.sheet_names())
+        if u'顾客商品表' not in data.sheet_names():
+            return JsonResponse({'error': True, 'contact_errors': 'sheet:顾客商品表 not exist'})
         table = data.sheet_by_name(u'顾客商品表')
         nrows = table.nrows 
         #title_list = table.row_values(0)
         positions = gen_pos(table.row_values(0))
-        print(positions)
+        #print(positions)
         for i in range(1, nrows):
-            print(table.row_values(i)) 
-            values = gen_form_data(positions, table.row_values(i))
+            #print(table.row_values(i)) 
+            values = gen_form_data(positions, assing_merge_cell(i, table))
             values['user'] = request.user
             print(values)
-            cont = Contact.objects.filter(name=values['name'])
-            if cont:
-                new_cont = cont[0].update(values)
-            else: 
+            cont0 = Contact.objects.filter(name=values['name'])
+            cont1 = Contact.objects.filter(phone=values['phone'])
+            if cont0:
+                new_cont = cont0[0]
+            elif cont1:
+                new_cont = cont1[0]
+            else:
                 address_form = BillingAddressForm(values)
                 cont_form = ContactForm(values)
-                print(address_form.is_valid())
-                print(cont_form.is_valid())
+                #print(address_form.is_valid())
+                #print(cont_form.is_valid())
                 if cont_form.is_valid() and address_form.is_valid():
                     print("form valid")
                     new_cont = Contact.create(values)
@@ -158,12 +183,16 @@ def load_contact_from_excel(request):
                     #return JsonResponse({'error': True, 'contact_errors': cont_form.errors,
                     #             'address_errors': address_form.errors})
                     continue
-            values['contact'] = new_cont
+            values['contacts'] = new_cont
             #values.update({"request_user": request.user})
-            #account_form = AccountForm(**values)
-            #if account_form.is_valid():
-            account = Account.create(values)
-            #else:
+            #account_form = AccountForm(values)
+            re_com = re.compile(r'^[0-9\.]+$')
+            if re_com.match(str(values['price'])):
+                print("account form valid")
+                account = Account.create(values)
+                new_cont.update(values)
+            else:
+                print('account not valid ')
             #    return JsonResponse({'error': True, 'account_errors': account_form.errors})
             #print(account)
 

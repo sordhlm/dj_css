@@ -22,8 +22,8 @@ class Contact(models.Model):
     created_on = models.DateTimeField(_("Created on"), auto_now_add=True)
     is_active = models.BooleanField(default=False)
     teams = models.ManyToManyField(Teams, related_name='contact_teams')
-    consumption = models.FloatField(blank=True, null=True)
-    score = models.IntegerField(blank=True, null=True)
+    consumption = models.FloatField(blank=True, default=0)
+    score = models.IntegerField(blank=True, default=0)
 
     def __str__(self):
         return self.name
@@ -42,8 +42,8 @@ class Contact(models.Model):
             phone=values['phone'],
             address=address_obj,
             created_by=values['user'],
-            consumption=round(values['price'], 2),
-            score=values['price']//10
+            score=0,
+            consumption=0
         )
         return suite
 
