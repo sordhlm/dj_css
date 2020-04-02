@@ -98,10 +98,10 @@ class ContactsListView(SalesAccessRequiredMixin, LoginRequiredMixin, TemplateVie
 def gen_form_data(pos, values):
     ret = {}
     for key, val in pos.items():
-        if 'create_on' in key:
-            print(key, val, values[val])
-            ret[key] = datetime.datetime.strptime(values[val],'%Y-%m-%d %H:%M:%S')
-        elif 'phone' in key:
+        #if 'create_on' in key:
+        #    print(key, val, values[val])
+        #    ret[key] = datetime.datetime.strptime(values[val],'%Y-%m-%d %H:%M:%S')
+        if 'phone' in key:
             ret[key] = '+86' + values[val]
         else:
             ret[key] = values[val]
