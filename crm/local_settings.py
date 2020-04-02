@@ -17,12 +17,18 @@ EMAIL_USE_TLS = True
 # Database Settings
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': '123456',
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '5432')
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/home/lhuang/01Git/db/dj_css.devel.sqlite',  # nosec:B108:hardcoded_tmp_directory
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
+        #'ENGINE': 'django.db.backends.postgresql',
+        #'NAME': 'postgres',
+        #'USER': 'postgres',
+        #'PASSWORD': '123456',
+        #'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        #'PORT': os.getenv('DB_PORT', '5432')
     }
 }
 

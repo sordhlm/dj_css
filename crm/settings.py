@@ -10,13 +10,14 @@ SECRET_KEY = 'SECRET_SECRET_SECRET'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG_STATUS', True)
+#DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 LOGIN_REDIRECT_URL = '/'
-
+STATIC_ROOT = '/dj_css/static/'
 LOGIN_URL = '/login/'
 
 INSTALLED_APPS = [
@@ -81,17 +82,23 @@ WSGI_APPLICATION = 'crm.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dj_crm',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '5432')
+        #'ENGINE': 'django.db.backends.postgresql',
+        #'NAME': 'dj_crm',
+        #'USER': 'postgres',
+        #'PASSWORD': 'root',
+        #'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        #'PORT': os.getenv('DB_PORT', '5432')
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/mnt/lhuang/db/dj_css.devel.sqlite',  # nosec:B108:hardcoded_tmp_directory
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), ]
-STATICFILES_DIRS.append(os.path.join(BASE_DIR, 'node_modules').replace('\\', '/'))
+STATICFILES_DIRS.append(os.path.join(BASE_DIR, 'node_modules'))
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -151,9 +158,9 @@ STORAGE_TYPE = os.getenv('STORAGE_TYPE', 'normal')
 if STORAGE_TYPE == 'normal':
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = '/media/'
-
+    
     STATIC_URL = '/static/'
-    STATICFILES_DIRS = (BASE_DIR + '/static',BASE_DIR+'/node_modules',)
+    STATICFILES_DIRS = (BASE_DIR + '/static', BASE_DIR+'/node_modules',)
     COMPRESS_ROOT = BASE_DIR + '/static/'
 
 elif STORAGE_TYPE == 's3-storage':
