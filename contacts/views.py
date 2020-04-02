@@ -155,8 +155,9 @@ def load_contact_from_excel(request):
                     print("form not valid")
                     print(cont_form.errors)
                     print(address_form.errors)
-                    return JsonResponse({'error': True, 'contact_errors': cont_form.errors,
-                                 'address_errors': address_form.errors})
+                    #return JsonResponse({'error': True, 'contact_errors': cont_form.errors,
+                    #             'address_errors': address_form.errors})
+                    continue
             values['contact'] = new_cont
             #values.update({"request_user": request.user})
             #account_form = AccountForm(**values)
