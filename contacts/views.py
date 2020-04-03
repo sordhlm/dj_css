@@ -162,6 +162,27 @@ def load_contact_from_excel(request):
             values = gen_form_data(positions, assing_merge_cell(i, table))
             values['user'] = request.user
             print(values)
+            if not values['name']:
+                continue
+            re_com = re.compile(r'^[0-9\.]+$')
+            if not re_com.match(str(values['price'])):
+                return JsonResponse({'error': True, 'price_errors': 'price is not a number'})
+            cont0 = Contact.objects.filter(name=values['name'])
+            cont1 = Contact.objects.filter(phone=values['phone'])
+            if not (cont0 or cont1):
+                address_form = BillingAddressForm(values)
+                cont_form = ContactForm(values)
+                if not cont_form.is_valid():
+                    return JsonResponse({'error': True, 'contact_errors': cont_form.errors})
+                if not address_form.is_valid():
+                    return JsonResponse({'error': True, 'address_errors': address_form.errors})
+
+        for i in range(1, nrows): 
+            values = gen_form_data(positions, assing_merge_cell(i, table))
+            values['user'] = request.user 
+            print(values)  
+            if not values['name']:
+                continue
             cont0 = Contact.objects.filter(name=values['name'])
             cont1 = Contact.objects.filter(phone=values['phone'])
             if cont0:
