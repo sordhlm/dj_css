@@ -104,6 +104,7 @@ class CreateSpendView(SalesAccessRequiredMixin, LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # Save Account
         print("[create spend]valid form")
+        print(form.cleaned_data)
         account_object = form.save(commit=False)
         account_object.created_by = self.request.user
         account_object.save()

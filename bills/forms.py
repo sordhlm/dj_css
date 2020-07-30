@@ -23,4 +23,4 @@ class BillForm(forms.ModelForm):
 
     class Meta:
         model = Bill
-        fields = ('name', 'description', 'amount', 'contact')
+        fields = ('name', 'description', 'amount', 'contact', 'created_on')

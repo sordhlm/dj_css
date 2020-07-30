@@ -100,6 +100,7 @@ function gen_pie_chart(data, name, container){
 function gen_progress_trend(data, container){
     var total_data = [];
     var paid_data = [];
+    var spend_data = [];
     console.debug(data)
     if(data.length){
         for(var i = 0;i < data.length;i++){
@@ -111,7 +112,11 @@ function gen_progress_trend(data, container){
             element = {};
             element.x = date;
             element.y = data[i].paid/10000;
-            paid_data.push(element);      
+            paid_data.push(element);    
+            element = {};
+            element.x = date;
+            element.y = data[i].spend/10000;
+            spend_data.push(element);    
         }
         console.debug(total_data)
         console.debug(paid_data)
@@ -159,6 +164,14 @@ function gen_progress_trend(data, container){
                 showInLegend: true,
                 name: "Paid",
                 dataPoints: paid_data
+            },
+            {
+                type: "line",
+                //xValueFormatString: "####",
+                //axisYType: "secondary",
+                showInLegend: true,
+                name: "Spend",
+                dataPoints: spend_data
             }]
         });
         chart.render();

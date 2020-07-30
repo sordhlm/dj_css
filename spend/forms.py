@@ -18,4 +18,4 @@ class SpendForm(forms.ModelForm):
 
     class Meta:
         model = Spend
-        fields = ('name', 'description', 'amount', 'product')
+        fields = ('name', 'description', 'amount', 'product', 'created_on')

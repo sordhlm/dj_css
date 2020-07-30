@@ -52,6 +52,14 @@
                   <span class="error" id="id__contacts">{{ bill_form.amount.errors }}</span>
                 </div>
               </div>
+              <div class="filter_col col-md-12">
+                <div class="form-group ">
+                  <label for="id_product"
+                    class="required">created_on{% if bill_form.created_on.field.required %}<span class="error_marker"
+                      style="color:red">*</span>{% endif %}</label>
+                  <input type="date" name="created_on">
+                </div>
+              </div>
               <div>
                 <h6 style="color:white;">Copy Address</h6>
               </div>

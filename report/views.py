@@ -57,9 +57,15 @@ def report(request):
     if len(bills):
         sdate = bills[0].created_on.date()
     if len(spends):
-        sdate = spends[0].created_on.date()
+        if sdate:
+            sdate = sdate if sdate < spends[0].created_on.date() else spends[0].created_on.date()
+        else:
+            sdate = spends[0].created_on.date()
     if len(accounts):
-        sdate = accounts[0].created_on.date()
+        if sdate:
+            sdate = sdate if sdate < accounts[0].created_on.date() else accounts[0].created_on.date()
+        else:
+            sdate = accounts[0].created_on.date()
 
     if sdate:
         now = datetime.datetime.now().date()

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import pgettext_lazy
 from django.utils.translation import ugettext_lazy as _
+import django.utils.timezone as timezone
 from common.models import User
 from contacts.models import Contact
 # Create your models here.
@@ -13,7 +14,7 @@ class Bill(models.Model):
     created_by = models.ForeignKey(
         User, related_name='bill_created_by',
         on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(_("Created on"), auto_now_add=True)
+    created_on = models.DateTimeField(_("Created on"), default=timezone.now)
     amount = models.FloatField(null=True)
     contact = models.ForeignKey('contacts.Contact', related_name='bill_contact',
                                  on_delete=models.CASCADE, null=True)
