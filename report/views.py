@@ -13,7 +13,7 @@ from spend.models import Spend
 def report(request):
     contact_detail = []
     spend_detail = []
-    summary = {'total': 0, 'paid': 0, 'remain': 0, 'spend':0}
+    summary = {'total': 0, 'paid': 0, 'remain': 0, 'spend':0, 'paid_percent':0, 'remain_percent':0}
     if request.method == "GET":
         step = 1
         
@@ -53,9 +53,15 @@ def report(request):
     bills = list(bills)
     spends = list(spends)
     print(spends)
-
+    sdate = None
+    if len(bills):
+        sdate = bills[0].created_on.date()
+    if len(spends):
+        sdate = spends[0].created_on.date()
     if len(accounts):
         sdate = accounts[0].created_on.date()
+
+    if sdate:
         now = datetime.datetime.now().date()
         date = sdate
         while date <= now:
@@ -97,9 +103,10 @@ def report(request):
         #total = sum(total_trend)
         #paid = sum(amount_trend)
         #remain = total - paid
-        summary['remain'] = summary['total'] - summary['paid']
-        summary['paid_percent'] = round(summary['paid']/summary['total'], 2)
-        summary['remain_percent'] = 1- summary['paid_percent']
+        if summary['total']:
+            summary['remain'] = summary['total'] - summary['paid']
+            summary['paid_percent'] = round(summary['paid']/summary['total'], 2)
+            summary['remain_percent'] = 1- summary['paid_percent']
         context_data = {
             'summary':summary,
             'data_trend': json.dumps(data_trend),
