@@ -1,6 +1,6 @@
 from django import forms
 from .models import Account, Email
-from common.models import Comment, Attachments, User
+from common.models import Comment, Attachments, User, Product
 from leads.models import Lead
 from contacts.models import Contact
 from django.db.models import Q
@@ -25,7 +25,7 @@ class AccountForm(forms.ModelForm):
             if request_user.role == 'ADMIN':
                 self.fields["lead"].queryset = Lead.objects.filter().exclude(
                     status='closed').order_by('title')
-                self.fields["contacts"].queryset = Contact.objects.filter()
+                self.fields["contacts"].queryset = Contact.objects.filter() 
                 self.fields["teams"].choices = [(team.get('id'), team.get('name')) for team in Teams.objects.all().values('id', 'name')]
                 self.fields["teams"].required = False
             else:
@@ -34,7 +34,10 @@ class AccountForm(forms.ModelForm):
                 self.fields["contacts"].queryset = Contact.objects.filter(
                     Q(assigned_to__in=[request_user]) | Q(created_by=request_user))
                 self.fields["teams"].required = False
+            self.fields["product"].queryset = Product.objects.filter()
             self.fields['price'].required = True
+            self.fields['quantity'].required = True
+        #self.fields['product'].required = True
         self.fields['assigned_to'].required = False
         #if account_view:
         #    self.fields['billing_address_line'].required = True
@@ -45,8 +48,8 @@ class AccountForm(forms.ModelForm):
         #    self.fields['billing_country'].required = True
 
         # lead is not mandatory while editing
-        if self.instance.id:
-            self.fields['lead'].required = False
+        #if self.instance.id:
+        self.fields['lead'].required = False
         self.fields['lead'].required = False
         self.fields["teams"].required = False
 
@@ -57,7 +60,8 @@ class AccountForm(forms.ModelForm):
         #          'billing_address_line', 'billing_street',
         #          'billing_city', 'billing_state',
         #          'billing_postcode', 'billing_country', 'lead', 'contacts')
-        fields = ('name', 'description', 'status', 'assigned_to', 'price',
+        fields = ('name', 'description', 'status', 'assigned_to', 
+                  'price', 'product', 'quantity', 'created_on',
                   'lead', 'contacts')
 
 

@@ -1,0 +1,243 @@
+{% extends 'sales/base.html' %}
+{% load staticfiles %}
+{% load paginate %}
+{% load thumbnail %}
+{% block extralinks %}
+
+<style>
+  .form-group label {
+    font-weight: 800;
+  }
+
+  #editor-container {
+    height: 20rem;
+  }
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="main_container">
+  <div class="row marl">  
+    <div class="col-lg-12 text-right">
+      <span class="d-inline"><a class="primary_btn md-trigger" data-modal="modal-12" style="color:#fff"><i class="fa fa-download"></i>
+          Load From Excel</a></span>
+      <div class="md-container md-effect-12" id="modal-12">
+          <div class="md-content">
+              <h3>File Uploading</h3>
+              <div>
+                  <form method="POST" enctype="multipart/form-data" action="{% url 'contacts:load_contact' %}">
+                      {% csrf_token %}
+                      <ul>
+                          <li  class="list_row" style="text-align:left">File</li>
+                          <input type="file" class="form-control" name="excel">
+                      </ul>
+                      <button type="submit" id="btn_upload" class="primary_btn">Upload</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+      <div class="md-overlay"></div>
+      <span class="d-inline"><a class="primary_btn" href="{% url 'spend:new_spend' %}"><i class="fa fa-plus"></i>
+          Add New Spend</a></span>
+    </div>
+  </div>
+  <div class="filter_row list_filter_row row marl">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <form id="accounts_filter" method="POST" action="">
+            <div class="card-body">
+              <div class="card-title">Filters</div>
+              <div class="row marl">
+                <div class="filter_col col-md-2">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Name</label>
+                    <input type="text" class="form-control" placeholder="Account Name" name="name" {% if request.POST %}
+                      value="{{request.POST.name}}" {%endif%} />
+                  </div>
+                </div>
+
+                <div class="filter_col col-md-2">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Product</label>
+                    <input type="text" class="form-control" placeholder="Product" name="product" {% if request.POST %}
+                      value="{{request.POST.product}}" {%endif%} />
+                  </div>
+                </div>
+                <input type="hidden" name="tab_status" id="tab_status">
+                <div class="filter_col col-lg-2">
+                  <div class="form-group buttons_row">
+                    <button class="btn btn-primary save" type="submit">Search</button>
+                    <a href="{% url 'accounts:list' %}" class="btn btn-default clear">Clear</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="filter_row row marl">
+    <div class="col-md-12 col-lg-12 col-xl-12">
+      <div class="table_container_row row marl no-gutters">
+        <div class="col-md-12">
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="open" role="tabpanel" aria-labelledby="open">
+              <div class="card">
+                <div class="card-body">
+                  <div class="panel-heading-list card-title text-right">
+                    <span class="total_count float-left"> Bills - {% if show_pageitems %}
+                      {% show_pageitems %}{% else %}{{bills_list|length}}{% endif %}</span>
+                    <span class="filter_toggle ">
+                      <a href="#" class="primary_btn"><i class="fas fa-filter"></i></a>
+                    </span>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table ">
+                      <thead>
+                        {% if spend_list|length > 0 %}
+                        <tr>
+                          <th width="5%">ID</th>
+                          <th width="10%">Name</th>
+                          <th width="5%">Amount</th>
+                          <th width="10%">Product</th>
+                          <th width="10%">Created by</th>
+                          <th width="20%">Created On</th>
+                          <th width="10%">Actions</th>
+                        </tr>
+                        {% endif %}
+                      </thead>
+                      <tbody>
+                        {% if per_page %}
+                        {% paginate per_page open_accounts %}
+                        {% else%}
+                        {% paginate 10 spend_list %}
+                        {% endif %}
+                        {% for each_account in spend_list %}
+                        <tr id="account_details{{each_account.id}}" class="text-center">
+                          <td scope="row" class="s_no" data-id="{{forloop.counter}}">{{ forloop.counter }}</td>
+                          
+                          <td>{% if each_account.name %}<a data-toggle="modal"
+                              data-target="#exampleModalCenter_account{{each_account.id}}"
+                              href="#">{{ each_account.name }}</a>{% endif %}
+                          </td>
+                          <td>{{ each_account.amount }}</a>
+                          </td>
+                          <td>{{ each_account.product.name }}</a>
+                          </td>
+                          <td>
+                            {% if each_account.created_by %}
+                            {% if each_account.created_by.profile_pic %}
+                            {% thumbnail each_account.created_by.profile_pic "40x40" crop="center" as im %}
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"
+                              title="{{ each_account.created_by }}">
+                            {% endthumbnail %}
+                            {% else %}
+                            <img src="{% static 'images/user.png' %}" alt="Micro profile pic"
+                              style="width: 40px;height: 40px;" title="{{ each_account.created_by }}" />
+                            {% endif %}
+                            {% else %}
+                            None
+                            {% endif %}
+                          </td>
+                          <td title="{{each_account.created_on}}">{{ each_account.created_on }}</td>
+                          <td class="actions">
+                            <a href="{% url 'bills:edit_spend' each_account.id %}" class="btn btn-success edit" title="Edit"><i
+                                class="fas fa-pencil-alt"></i></a>
+                            <a href="{% url 'spend:remove_spend' each_account.id %}"
+                              class="btn btn-danger delete remove_bill" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  {% ifequal spend_list|length 0 %}
+                  <h6 class="text-center">No Spend Records Found</h6>
+                  {% endifequal %}
+                  <div class="text-center row marl">
+                    {% show_pages %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br clear="all">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_block %}
+
+<script type="text/javascript">
+  $(".tag_class_acc").click(function () {
+    // $(".tag_class_acc").css('cursor', 'pointer')
+    url = "{% url 'bills:list' %}"
+    url = url + "?tag=" + $(this).attr('data-link')
+    window.location.href = url;
+  });
+  $('.md-trigger').on('click',function(){
+        var modal = $(this).data('modal');
+        console.debug(modal)
+        $("#" + modal).niftyModal();
+  });  
+
+
+  $('.remove_bill').click(function (e) {
+    e.preventDefault()
+    url = $(this).attr('href')
+    if (!confirm('Are you sure you want to delete?'))
+      return;
+    window.location = $(this).attr('href')
+  });
+
+  search = "{{search}}"
+
+  if (search == 'True') {
+    $(".list_filter_row").show();
+  }
+
+  $(document).ready(function () {
+    $(".filter_toggle").click(function () {
+      $(".list_filter_row").toggle();
+    });
+    $('#id_tag').select2();
+
+    ////////////////////////
+    $.urlParam = function (name) {
+      var results = new RegExp('[\?&]' + name + '=([^&#]*)')
+        .exec(window.location.search);
+      return (results !== null) ? results[1] || 0 : false;
+    }
+
+    if ($.urlParam('page')) {
+      $('.s_no').each(function (i, e) {
+        pageNum = $.urlParam('page')
+        if (!$(this).attr('data-id').endsWith('0')) {
+          serialNumber = parseInt((pageNum - 1) + $(this).attr('data-id'))
+          console.log(serialNumber)
+        }
+        else {
+          serialNumber = parseInt($(this).attr('data-id')) * pageNum
+          console.log(serialNumber)
+        }
+      })
+    }
+    ////////////////////////
+
+  });
+
+  $("a[rel='page']").click(function (e) {
+    e.preventDefault();
+    $('#accounts_filter').attr("action", $(this).attr("href"));
+    $('#accounts_filter').submit();
+  });
+
+</script>
+{% endblock js_block %}

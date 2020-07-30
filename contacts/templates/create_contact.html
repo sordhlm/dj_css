@@ -49,21 +49,22 @@
                   <span class="error">{{ contact_form.email.errors }}</span>
                 </div>
               </div>
-            -->
+            
               <div class="filter_col col-md-6">
                 <div class="form-group ">
-                  <label for="exampleInputEmail1" class="required">Score</label>
-                  {{ contact_form.score }}
-                  <span class="error">{{ contact_form.score.errors }}</span>
+                  <label for="exampleInputEmail1" class="required">Total</label>
+                  {{ contact_form.total }}
+                  <span class="error">{{ contact_form.total.errors }}</span>
                 </div>
               </div>
               <div class="filter_col col-md-6">
                 <div class="form-group ">
-                  <label for="exampleInputEmail1" class="required">Consumption</label>
-                  {{ contact_form.consumption }}
-                  <span class="error">{{ contact_form.consumption.errors }}</span>
+                  <label for="exampleInputEmail1" class="required">Remain</label>
+                  {{ contact_form.remain }}
+                  <span class="error">{{ contact_form.remain.errors }}</span>
                 </div>
               </div>
+              -->
               {% if request.user.is_superuser or request.user.role == 'ADMIN' %}
               <div class="filter_col col-12">
                 <div class="form-group">

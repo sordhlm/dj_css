@@ -1,0 +1,97 @@
+{% extends 'sales/base.html' %}
+{% load static %}
+{% load staticfiles %}
+{% load paginate %}
+{% load thumbnail %}
+{% block extralinks %}
+<link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
+<style>
+  .form-group label {
+    font-weight: 800;
+  }
+
+  #editor-container {
+    height: 20rem;
+  }
+</style>
+{% endblock %}
+{% block js_block %}
+<script type="text/javascript">
+    var data_trend = {{ data_trend | safe }};
+    var spends = {{ spends | safe }};
+    var summary = {{summary | safe}};
+</script>
+<script src="{% static 'canvasjs/dist/canvasjs.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/run_report_actions.js' %}"></script>
+
+{% endblock js_block %}
+{% block content %}
+
+<div class="main_container">
+  <div id="summary_container">
+    <div class="alert alert-info" role="alert">
+      <div class="summary_data">
+        <label class="col-md-4 col-lg-4" id="id_total"> Total </label>
+        <span class="badge badge-first">{{summary.total}}</span>
+      </div>
+      <div class="summary_data">
+        <label class="col-md-4 col-lg-4" id="id_total"> Remain </label>
+        <span class="badge badge-first">{{summary.remain}}</span>
+      </div>
+      <div class="summary_data">
+        <label class="col-md-4 col-lg-4" id="id_total"> Spend </label>
+        <span class="badge badge-first">{{summary.spend}}</span>
+      </div>
+    </div>
+  </div>
+  <div id="progress_container" style="margin:0px auto 0 auto; height: 500px; width: 98%; border: 1px solid #ccc;">
+    <div class="data_select" style="margin:10px">
+      <label class="col-md-1 col-lg-1" for="id_progress_step">Progress Step</label>
+      <div class="col-md-1 col-lg-1">
+        <select class="form-control selectpicker" id="id_progress_step" style="width:100px">
+          <option value="1">Day</option>
+          <option value="2">Week</option>
+          <option value="3">Month</option>
+          <option value="4">Year</option>
+        </select>
+      </div>
+    </div>
+    <div id="chartContainer" class="progress_container" style="margin:50px; height: 400px; width: 1000px; position: absolute;"></div>
+    <div id="pieContainer" class="progress_rate" style="margin-left:1100px; margin-top:50px; position:absolute; width:400px; height:400px"> </div>
+    <div id="spendContainer" class="spend_rate" style="margin-left:1500px; margin-top:50px; position:absolute; width:400px; height:400px"> </div>
+  </div>
+  <!--<canvas id="progress_trend" style="margin-left:50px; float:left; width:50%; height:400px"> </canvas>-->
+  <div class="table_container" style="margin:0px auto 0 auto; width: 98%; border: 1px solid #ccc;">
+    <table class="list border-bottom" id="id_table_report" style="width:98%;margin-left:20px">
+    <thead>
+      <tr>
+        <th align="left" width="10%">Contact</th>
+        <th align="left" width="10%">Total</th>
+        <th align="left">Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for contact in contacts %}
+      <tr class="odd">
+        <td valign="top">{{contact.name}}</td>
+        <td valign="top">{{ contact.total }}</td>
+        <td valign="top">
+        <div class="progress">
+          <div class="progress-bar progress-bar-success" style="width:
+            {{contact.paid}}%; background:#5cb85c">
+            {{contact.paid}}% Paid
+          </div>
+          <div class="progress-bar progress-bar-danger" style="width: 
+            {{contact.remain}}%; background: #d9534f;">
+            {{contact.remain}}% Remain
+          </div>
+        </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+{% endblock %}
+

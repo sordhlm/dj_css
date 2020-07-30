@@ -1,0 +1,98 @@
+{% extends 'sales/base.html' %}
+{% load staticfiles %}
+{% block breadcrumb %}
+{% block extralinks %}
+
+{% endblock %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'bills:list' %}">Bills</a></li>
+    <li class="breadcrumb-item active">{% if bill_obj %}Edit{% else %}Create{% endif %}</li>
+  </ol>
+</nav>
+{% endblock %}
+{% block content %}
+{% if contact_count or edit_view%}
+<form id="formid" action='' method="POST" novalidate enctype="multipart/form-data">
+  <div class="overview_form_block row marl justify-content-center">
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title text-center">
+            {% if account_obj %}EDIT{% else %}CREATE{% endif %} Bill
+          </div>
+          <div class="row marl">
+            <div class="col-md-4">
+              <div class="filter_col col-md-12">
+                <div class="form-group">
+                  <label for="exampleInputEmail1" class="required">Name{% if bill_form.name.field.required %}<span
+                      class="error_marker" style="color:red">*</span>{% endif %}</label>
+                  {{ bill_form.name }}
+                  <span class="error" id="id__name">{{ bill_form.name.errors }}</span>
+                </div>
+              </div>
+              <div class="filter_col col-md-12">
+                <div class="form-group ">
+                  <label for="id_contacts"
+                    class="required">Contacts{% if bill_form.contact.field.required %}<span class="error_marker"
+                      style="color:red">*</span>{% endif %}</label>
+                  {{ bill_form.contact }}
+                  <span class="error" id="id__contacts">{{ bill_form.contact.errors }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="filter_col col-md-12">
+                <div class="form-group ">
+                  <label for="id_product"
+                    class="required">Amount{% if bill_form.amount.field.required %}<span class="error_marker"
+                      style="color:red">*</span>{% endif %}</label>
+                  {{ bill_form.amount }}
+                  <span class="error" id="id__contacts">{{ bill_form.amount.errors }}</span>
+                </div>
+              </div>
+              <div>
+                <h6 style="color:white;">Copy Address</h6>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="row marl buttons_row form_btn_row text-center">
+                <button class="btn btn-default save" type="submit" id="call_save">Save</button>
+                <a href="{% url 'bills:list' %}" class="btn btn-default clear" id="create_user_cancel">Cancel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="save_new_form" name="savenewform">
+  </div>
+  
+</form>
+{% else %}
+<div class="justify-content-center text-center">
+  <h3 class="mt-5">Create a <a href="{% url 'contacts:add_contact' %}">contact</a> to create an Bill</h3>
+</div>
+{% endif %}
+{% endblock %}
+{% block js_block %}
+
+<script type="text/javascript">
+
+  // $(document).ready(function() {
+  //   $('.assigned_users').select2();
+  // });
+  $(document).ready(function () {
+    $("#id_contacts").select2();
+  });
+
+
+  $(".save").on('click', function (e) {
+    console.debug('click save')
+    e.preventDefault()
+    $("#save_new_form").val('true')
+    $('#formid').submit()
+  });
+</script>
+{% endblock js_block %}

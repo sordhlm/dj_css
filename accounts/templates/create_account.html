@@ -56,7 +56,7 @@
                   <span class="error" id="id__email">{{ account_form.email.errors }}</span>
                 </div>
               </div>
-              -->
+              
               <div class="filter_col col-md-12">
                 <div class="form-group ">
                   <label for="exampleInputEmail1" class="required">Leads{% if account_form.lead.field.required %}<span
@@ -66,9 +66,20 @@
                   <span class="error" id="id__lead">{{ account_form.lead.errors }}</span>
                 </div>
               </div>
+              -->
+              <div class="filter_col col-md-12">
+                <div class="form-group ">
+                  <label for="id_contacts"
+                    class="required">Contacts{% if account_form.contacts.field.required %}<span class="error_marker"
+                      style="color:red">*</span>{% endif %}</label>
+                  {{ account_form.contacts }}
+                  <span class="error" id="id__contacts">{{ account_form.contacts.errors }}</span>
+                </div>
+              </div>
             </div>
-            <!--
+            
             <div class="col-md-4">
+              <!--
               <div class="filter_col billing_block col-md-12" style="padding: 0px;">
                 <div class="form-group">
                   <label for="exampleInputEmail1">Billing Address
@@ -123,19 +134,47 @@
                   -->
                   <div class="filter_col col-md-12">
                     <div class="form-group ">
-                      <label for="id_contacts"
-                        class="required">Contacts{% if account_form.contacts.field.required %}<span class="error_marker"
+                      <label for="id_product"
+                        class="required">created_on{% if account_form.created_on.field.required %}<span class="error_marker"
                           style="color:red">*</span>{% endif %}</label>
-                      {{ account_form.contacts }}
-                      <span class="error" id="id__contacts">{{ account_form.contacts.errors }}</span>
+                      <input type="date" name="created_on">
                     </div>
                   </div>
+                  <div class="filter_col col-md-12">
+                    <div class="form-group ">
+                      <label for="id_product"
+                        class="required">Product{% if account_form.product.field.required %}<span class="error_marker"
+                          style="color:red">*</span>{% endif %}</label>
+                      {{ account_form.product }}
+                      <span class="error" id="id__contacts">{{ account_form.product.errors }}</span>
+                    </div>
+                  </div>
+                  <div class="filter_col col-md-12">
+                    <div class="form-group ">
+                      <label for="id_product"
+                        class="required">Price{% if account_form.price.field.required %}<span class="error_marker"
+                          style="color:red">*</span>{% endif %}</label>
+                      {{ account_form.price }}
+                      <span class="error" id="id__contacts">{{ account_form.price.errors }}</span>
+                    </div>
+                  </div>
+                  <div class="filter_col col-md-12">
+                    <div class="form-group ">
+                      <label for="id_product"
+                        class="required">Quantity{% if account_form.quantity.field.required %}<span class="error_marker"
+                          style="color:red">*</span>{% endif %}</label>
+                      {{ account_form.quantity }}
+                      <span class="error" id="id__contacts">{{ account_form.quantity.errors }}</span>
+                    </div>
+                  </div>
+                  
                 </div>
               </div>
               <div>
                 <h6 style="color:white;">Copy Address</h6>
               </div>
             </div>
+            <!--
             <div class="col-md-4">
               {% if request.user.is_superuser or request.user.role == 'ADMIN' %}
               <div class="filter_col col-12">
@@ -227,6 +266,7 @@
                 </div>
               </div>
             </div>
+          -->
             <div class="col-md-12">
               <div class="row marl buttons_row form_btn_row text-center">
                 <button class="btn btn-default save" type="submit" id="call_save">Save</button>
@@ -277,16 +317,17 @@
     // })
   });
 
-  $("#copy_billing_btn").click(function () {
-    var address_line = $("#id_address_line").val();
-    var street = $("#id_street").val();
-    var city = $("#id_city").val();
-    var state = $("#id_state").val();
-    var postcode = $("#id_postcode").val();
-    var country = $("#id_country").val();
-  });
+  //$("#copy_billing_btn").click(function () {
+  //  var address_line = $("#id_address_line").val();
+  //  var street = $("#id_street").val();
+  //  var city = $("#id_city").val();
+  //  var state = $("#id_state").val();
+  //  var postcode = $("#id_postcode").val();
+  //  var country = $("#id_country").val();
+  //});
 
-  $(".savenew").on('click', function (e) {
+  $(".save").on('click', function (e) {
+    console.debug('click save')
     e.preventDefault()
     $("#save_new_form").val('true')
     $('#formid').submit()
@@ -330,212 +371,212 @@
     // Uncomment this line to see an input with no interface for adding new tags.
     //      $('input.tags').tagsInput({interactive:false});
   });
-  function remove_attachment(x) {
-    const con = confirm("Do you want to Delete it for Sure!?");
-    if (con == true) {
-      $.post('{% url "cases:remove_attachment" %}', {
-        "attachment_id": x
-      }, function (data) {
-        if (data.error) {
-          alert(data.errors)
-        } else {
-          $("#attachment" + data.attachment_object).remove()
-        }
-      })
-    }
-  }
+  //function remove_attachment(x) {
+  //  const con = confirm("Do you want to Delete it for Sure!?");
+  //  if (con == true) {
+  //    $.post('{% url "cases:remove_attachment" %}', {
+  //      "attachment_id": x
+  //    }, function (data) {
+  //      if (data.error) {
+  //        alert(data.errors)
+  //      } else {
+  //        $("#attachment" + data.attachment_object).remove()
+  //      }
+  //    })
+  //  }
+  //}
 
 
 
-  $('form#formid').ajaxForm({
-    type: 'POST',
-    dataType: 'json',
-    url: ".",
-    data: $('#formid').serialize(),
-    success: function (data) {
-      if (data.error) {
-        $('.error').html('')
-        for (var key in data.errors) {
-          $('#id__' + key).html("<p>" + data.errors[key][0] + "</p>");
-        };
-        $('#submit_btn').removeAttr('disabled')
-      }
-      else {
-        window.location = data.success_url;
-      }
-    }
-  });
+  //$('form#formid').ajaxForm({
+  //  type: 'POST',
+  //  dataType: 'json',
+  //  url: ".",
+  //  data: $('#formid').serialize(),
+  //  success: function (data) {
+  //    if (data.error) {
+  //      $('.error').html('')
+  //      for (var key in data.errors) {
+  //        $('#id__' + key).html("<p>" + data.errors[key][0] + "</p>");
+  //      };
+  //      $('#submit_btn').removeAttr('disabled')
+  //    }
+  //    else {
+  //      window.location = data.success_url;
+  //    }
+  //  }
+  //});
 
-  $('#multiple').change(function () {
-    var $value = $('option:selected', this).attr('type');
-    console.log($value);
-  });
+  //$('#multiple').change(function () {
+  //  var $value = $('option:selected', this).attr('type');
+  //  console.log($value);
+  //});
+//
+  //function find_dict(dict, id){
+  //  var index = dict.map(function(o) { return o.team; }).indexOf(parseInt(id));
+  //  return dict[index]['users'];
+  //}
 
-  function find_dict(dict, id){
-    var index = dict.map(function(o) { return o.team; }).indexOf(parseInt(id));
-    return dict[index]['users']
-  }
+  //$("#id_teams").change(function (e) {
+  //  var teams = []
+  //  var all_users = []
+  //  var selected_teams = []
+  //  var selected_users = []
+  //  var assigned_users = []
+  //  $.get("{% url 'accounts:get_teams_and_users' %}", function(data){
+  //    // console.log(data)
+  //        if(($('#id_teams').val()).length==0){
+  //          $('#id_assigned_to option').each(function () {
+  //          $(this).removeAttr('disabled')
+  //          })
+  //      $('#id_assigned_to').select2().trigger('change');
+//
+  //        }
+//
+  //    teams = data['teams']
+  //    all_users = data['users']
+  //    try {
+  //      var users = []
+  //      $('#id_teams option:selected').each(function () {
+  //        // users.push($(this).attr('data-users'))
+  //        _data = $(this).attr('data-users');
+  //        selected_teams.push($(this).val())
+  //        selected_users.push(find_dict(teams, $(this).val()))
+  //        // console.log("s_users", selected_users)
+  //        var un_select_users = [].concat.apply([], selected_users)
+  //        // console.log('un select users', un_select_users);
+//
+//
+  //      $('#id_assigned_to option').each(function () {
+  //        if($.inArray(parseInt($(this).val()), un_select_users) != -1){
+  //          $(this).attr('disabled', 'disabled')
+  //          $('#id_assigned_to').select2();
+//
+  //        }
+  //        else{
+  //          $(this).show()
+  //          $(this).removeAttr('disabled')
+  //          $('#id_assigned_to').select2();
+//
+  //        }
+  //        }
+  //      )
+//
+//
+  //        if (!selected_teams) {
+  //          users = []
+  //          $('#id_assigned_to option').each(function () {
+  //          $(this).removeAttr('disabled')
+  //          })
+  //          $('#id_assigned_to').select2();
+  //        } else {
+  //          users = users.concat(_data.split(','))
+  //        }
+  //      });
+  //      $('#id_teams option').each(function () {
+  //        if ($(this).is(':selected')) {
+  //          _data = $(this).attr('data-users').split(',')
+  //          // console.log(' selected', $(this).attr('data-users').split(','))
+  //          // console.log('selected', $(this).attr('data-users'))
+  //        }
+  //        else {
+  //          _unselected = $(this).attr('data-users').split(',')
+  //          // console.log('un selected', $(this).attr('data-users').split(','))
+  //        }
+  //      });
+  //      // console.log('selected users teams data', users)
+  //      var existingUsers = $('#id_assigned_to').val();
+  //      var allUsers = users
+  //      $('#_id_assigned_to').select2().val(allUsers).trigger('change');
+  //      if (users.length) {
+//
+  //      }
+  //    } catch (error) {
+  //      console.log(error)
+  //      $('#_id_assigned_to').select2().val([]).trigger('change');
+  //    }
+  //  })
+//
+  //});
 
-  $("#id_teams").change(function (e) {
-    var teams = []
-    var all_users = []
-    var selected_teams = []
-    var selected_users = []
-    var assigned_users = []
-    $.get("{% url 'accounts:get_teams_and_users' %}", function(data){
-      // console.log(data)
-          if(($('#id_teams').val()).length==0){
-            $('#id_assigned_to option').each(function () {
-            $(this).removeAttr('disabled')
-            })
-        $('#id_assigned_to').select2().trigger('change');
+  //$(document).ready(function($) {
+//
+  //  var teams = []
+  //  var all_users = []
+  //  var selected_teams = []
+  //  var selected_users = []
+  //  var assigned_users = []
+  //  //$.get("{% url 'accounts:get_teams_and_users' %}", function(data){
+//
+    //      if(($('#id_teams').val()).length==0){
+    //        $('#id_assigned_to option').each(function () {
+    //        $(this).removeAttr('disabled')
+    //        })
+    //    // $('#id_assigned_to').select2().val([]).trigger('change');
+//
+    //      }
+//
+    //  teams = data['teams']
+    //  all_users = data['users']
+    //  try {
+    //    var users = []
+    //    $('#id_teams option:selected').each(function () {
+    //      // users.push($(this).attr('data-users'))
+    //      _data = $(this).attr('data-users');
+    //      selected_teams.push($(this).val())
+    //      selected_users.push(find_dict(teams, $(this).val()))
+    //      var un_select_users = [].concat.apply([], selected_users)
+//
+//
+    //    //$('#id_assigned_to option').each(function () {
+    //    //  if($.inArray(parseInt($(this).val()), un_select_users) != -1){
+    //    //    // $(this).attr('disabled', 'disabled')
+    //    //    $(this).attr('disabled', 'disabled')
+    //    //    $('#id_assigned_to').select2();
+////
+    //    //  }
+    //    //  else{
+    //    //    $(this).show()
+    //    //    $(this).removeAttr('disabled')
+    //    //    $('#id_assigned_to').select2();
+////
+    //    //  }
+    //    //  }
+    //    //)
+//
+//
+    //      if (!selected_teams) {
+    //        users = []
+    //        $('#id_assigned_to option').each(function () {
+    //        $(this).removeAttr('disabled')
+    //        })
+    //        $('#id_assigned_to').select2();
+    //      } else {
+    //        users = users.concat(_data.split(','))
+    //      }
+    //    });
+    //    //$('#id_teams option').each(function () {
+    //    //  if ($(this).is(':selected')) {
+    //    //    _data = $(this).attr('data-users').split(',')
+    //    //  }
+    //    //  else {
+    //    //    _unselected = $(this).attr('data-users').split(',')
+    //    //  }
+    //    //});
+    //    var existingUsers = $('#id_assigned_to').val();
+    //    // var allUsers = users.concat(existingUsers)
+    //    var allUsers = users
+    //    // console.log(existingUsers)
+    //    $('#_id_assigned_to').select2().val(allUsers).trigger('change');
+    //    if (users.length) {
+//
+    //    }
+    //  } catch (error) {
+    //    console.log(error)
+    //    $('#_id_assigned_to').select2().val([]).trigger('change');
+    //  }
+    //})
 
-          }
-
-      teams = data['teams']
-      all_users = data['users']
-      try {
-        var users = []
-        $('#id_teams option:selected').each(function () {
-          // users.push($(this).attr('data-users'))
-          _data = $(this).attr('data-users');
-          selected_teams.push($(this).val())
-          selected_users.push(find_dict(teams, $(this).val()))
-          // console.log("s_users", selected_users)
-          var un_select_users = [].concat.apply([], selected_users)
-          // console.log('un select users', un_select_users);
-
-
-        $('#id_assigned_to option').each(function () {
-          if($.inArray(parseInt($(this).val()), un_select_users) != -1){
-            $(this).attr('disabled', 'disabled')
-            $('#id_assigned_to').select2();
-
-          }
-          else{
-            $(this).show()
-            $(this).removeAttr('disabled')
-            $('#id_assigned_to').select2();
-
-          }
-          }
-        )
-
-
-          if (!selected_teams) {
-            users = []
-            $('#id_assigned_to option').each(function () {
-            $(this).removeAttr('disabled')
-            })
-            $('#id_assigned_to').select2();
-          } else {
-            users = users.concat(_data.split(','))
-          }
-        });
-        $('#id_teams option').each(function () {
-          if ($(this).is(':selected')) {
-            _data = $(this).attr('data-users').split(',')
-            // console.log(' selected', $(this).attr('data-users').split(','))
-            // console.log('selected', $(this).attr('data-users'))
-          }
-          else {
-            _unselected = $(this).attr('data-users').split(',')
-            // console.log('un selected', $(this).attr('data-users').split(','))
-          }
-        });
-        // console.log('selected users teams data', users)
-        var existingUsers = $('#id_assigned_to').val();
-        var allUsers = users
-        $('#_id_assigned_to').select2().val(allUsers).trigger('change');
-        if (users.length) {
-
-        }
-      } catch (error) {
-        console.log(error)
-        $('#_id_assigned_to').select2().val([]).trigger('change');
-      }
-    })
-
-  });
-
-  $(document).ready(function($) {
-
-    var teams = []
-    var all_users = []
-    var selected_teams = []
-    var selected_users = []
-    var assigned_users = []
-    $.get("{% url 'accounts:get_teams_and_users' %}", function(data){
-
-          if(($('#id_teams').val()).length==0){
-            $('#id_assigned_to option').each(function () {
-            $(this).removeAttr('disabled')
-            })
-        // $('#id_assigned_to').select2().val([]).trigger('change');
-
-          }
-
-      teams = data['teams']
-      all_users = data['users']
-      try {
-        var users = []
-        $('#id_teams option:selected').each(function () {
-          // users.push($(this).attr('data-users'))
-          _data = $(this).attr('data-users');
-          selected_teams.push($(this).val())
-          selected_users.push(find_dict(teams, $(this).val()))
-          var un_select_users = [].concat.apply([], selected_users)
-
-
-        $('#id_assigned_to option').each(function () {
-          if($.inArray(parseInt($(this).val()), un_select_users) != -1){
-            // $(this).attr('disabled', 'disabled')
-            $(this).attr('disabled', 'disabled')
-            $('#id_assigned_to').select2();
-
-          }
-          else{
-            $(this).show()
-            $(this).removeAttr('disabled')
-            $('#id_assigned_to').select2();
-
-          }
-          }
-        )
-
-
-          if (!selected_teams) {
-            users = []
-            $('#id_assigned_to option').each(function () {
-            $(this).removeAttr('disabled')
-            })
-            $('#id_assigned_to').select2();
-          } else {
-            users = users.concat(_data.split(','))
-          }
-        });
-        $('#id_teams option').each(function () {
-          if ($(this).is(':selected')) {
-            _data = $(this).attr('data-users').split(',')
-          }
-          else {
-            _unselected = $(this).attr('data-users').split(',')
-          }
-        });
-        var existingUsers = $('#id_assigned_to').val();
-        // var allUsers = users.concat(existingUsers)
-        var allUsers = users
-        // console.log(existingUsers)
-        $('#_id_assigned_to').select2().val(allUsers).trigger('change');
-        if (users.length) {
-
-        }
-      } catch (error) {
-        console.log(error)
-        $('#_id_assigned_to').select2().val([]).trigger('change');
-      }
-    })
-
-  });
+  //});
 </script>
 {% endblock js_block %}

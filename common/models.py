@@ -24,6 +24,16 @@ def img_url(self, filename):
     return "%s/%s/%s" % ("profile_pics", hash_, filename)
 
 
+class Product(models.Model):
+    id = models.AutoField(db_column='product_id', primary_key=True)
+    name = models.CharField(max_length=64)
+    cost = models.FloatField()
+    created_on = models.DateTimeField(_("Created on"), auto_now_add=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
 class User(AbstractBaseUser, PermissionsMixin):
     file_prepend = "users/profile_pics"
     username = models.CharField(max_length=100, unique=True)

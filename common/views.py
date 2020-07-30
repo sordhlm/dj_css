@@ -42,6 +42,7 @@ from common.tasks import (resend_activation_link_to_user,
 from common.token_generator import account_activation_token
 from common.utils import ROLES, COUNTRIES
 from contacts.models import Contact
+from bills.models import Bill
 from leads.models import Lead
 from opportunity.models import Opportunity
 from teams.models import Teams
@@ -87,6 +88,7 @@ class HomeView(SalesAccessRequiredMixin, LoginRequiredMixin, TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
         accounts = Account.objects.filter(status="open")
         contacts = Contact.objects.all()
+        bills = Bill.objects.all()
         leads = Lead.objects.exclude(
             status='converted').exclude(status='closed')
         opportunities = Opportunity.objects.all()
@@ -108,6 +110,7 @@ class HomeView(SalesAccessRequiredMixin, LoginRequiredMixin, TemplateView):
 
         context["accounts"] = accounts
         context["contacts_count"] = contacts.count()
+        context["bills_count"] = bills.count()
         context["leads_count"] = leads
         context["opportunities"] = opportunities
         return context

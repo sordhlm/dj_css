@@ -46,7 +46,7 @@ class ContactsListView(SalesAccessRequiredMixin, LoginRequiredMixin, TemplateVie
     template_name = "contacts.html"
 
     def get_queryset(self):
-        queryset = self.model.objects.all().order_by('-consumption')
+        queryset = self.model.objects.all().order_by('-total')
         if (self.request.user.role != "ADMIN" and not
                 self.request.user.is_superuser):
             queryset = queryset.filter(
@@ -211,7 +211,7 @@ def load_contact_from_excel(request):
             if re_com.match(str(values['price'])):
                 print("account form valid")
                 account = Account.create(values)
-                new_cont.update(values)
+                new_cont.update({'order':values['price']*values['quantity']})
             else:
                 print('account not valid ')
             #    return JsonResponse({'error': True, 'account_errors': account_form.errors})
@@ -289,8 +289,8 @@ class CreateContactView(SalesAccessRequiredMixin, LoginRequiredMixin, CreateView
         assigned_to_list = list(contact_obj.assigned_to.all().values_list('id', flat=True))
         current_site = get_current_site(self.request)
         recipients = assigned_to_list
-        send_email_to_assigned_user.delay(recipients, contact_obj.id, domain=current_site.domain,
-            protocol=self.request.scheme)
+        #send_email_to_assigned_user.delay(recipients, contact_obj.id, domain=current_site.domain,
+        #    protocol=self.request.scheme)
 
         if self.request.FILES.get('contact_attachment'):
             attachment = Attachments()

@@ -32,7 +32,10 @@ INSTALLED_APPS = [
     # 'haystack',
     'common',
     'accounts',
+    'bills',
+    'report',
     'cases',
+    'spend',
     'contacts',
     'emails',
     'leads',
@@ -89,7 +92,7 @@ DATABASES = {
         #'HOST': os.getenv('DB_HOST', '127.0.0.1'),
         #'PORT': os.getenv('DB_PORT', '5432')
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/mnt/lhuang/db/dj_css.devel.sqlite',  # nosec:B108:hardcoded_tmp_directory
+        'NAME': '/mnt/lhuang/02platform/dj_css/dj_css.devel.sqlite',  # nosec:B108:hardcoded_tmp_directory
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '',

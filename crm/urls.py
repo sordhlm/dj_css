@@ -12,9 +12,13 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('marketing/', include('marketing.urls', namespace="marketing")),
+
     path('accounts/', include('accounts.urls', namespace="accounts")),
+    path('bills/', include('bills.urls', namespace="bills")),
+    path('spend/', include('spend.urls', namespace="spend")),
     path('leads/', include('leads.urls', namespace="leads")),
     path('contacts/', include('contacts.urls', namespace="contacts")),
+    path('report/', include('report.urls', namespace="report")),
     path('opportunities/',
          include('opportunity.urls', namespace="opportunities")),
     path('cases/', include('cases.urls', namespace="cases")),

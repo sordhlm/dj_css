@@ -8,6 +8,7 @@ from teams.models import Teams
 
 
 class Contact(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(_("name"), max_length=255, null=True, unique=True)
     phone = PhoneNumberField(null=True, unique=True)
     address = models.ForeignKey(
@@ -22,8 +23,8 @@ class Contact(models.Model):
     created_on = models.DateTimeField(_("Created on"), auto_now_add=True)
     is_active = models.BooleanField(default=False)
     teams = models.ManyToManyField(Teams, related_name='contact_teams')
-    consumption = models.FloatField(blank=True, default=0)
-    score = models.IntegerField(blank=True, default=0)
+    remain = models.FloatField(blank=True, default=0)
+    total = models.FloatField(blank=True, default=0)
 
     def __str__(self):
         return self.name
@@ -48,8 +49,12 @@ class Contact(models.Model):
         return suite
 
     def update(self, values):
-        self.score += values['price']//10
-        self.consumption += round(values['price'], 2)
+        #print(values)
+        if values.get('bill'):
+            self.remain = self.remain - values['bill']
+        if values.get('order'):
+            self.total += values['order']
+            self.remain += values['order']
         self.save()
         return self
 

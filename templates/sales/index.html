@@ -28,6 +28,14 @@
         </div>
       </div>
       <div class="col-md-3">
+        <div class="item sky_blue">
+          <a href="{% url 'bills:list'%}">
+            <div class="title">Bills</div>
+            <div class="count">{{bills_count}}</div>
+          </a>
+        </div>
+      </div>
+      <div class="col-md-3">
         <div class="item green">
           <a href="{% url 'contacts:list' %}">
             <div class="title">Contacts</div>
@@ -36,6 +44,7 @@
           
         </div>
       </div>
+      <!--
       <div class="col-md-3">
         <div class="item red">
           <a href="{% url 'leads:list' %}">
@@ -50,10 +59,10 @@
           <a href="{% url 'opportunity:list' %}">
             <div class="title">Opportunities</div>
             <div class="count">{{opportunities|length}}</div>
-            
           </a>
         </div>
       </div>
+    -->
     </div>
     
     <div class="open_sections row">

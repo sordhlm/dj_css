@@ -5,7 +5,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.forms.models import model_to_dict 
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -152,6 +151,7 @@ class CreateAccountView(SalesAccessRequiredMixin, LoginRequiredMixin, CreateView
     def post(self, request, *args, **kwargs):
         self.object = None
         form = self.get_form()
+        print("get POST request")
         if form.is_valid():
             return self.form_valid(form)
 
@@ -159,47 +159,50 @@ class CreateAccountView(SalesAccessRequiredMixin, LoginRequiredMixin, CreateView
 
     def form_valid(self, form):
         # Save Account
+        print("[create account]valid form")
         account_object = form.save(commit=False)
         account_object.created_by = self.request.user
+        account_object.total = account_object.price * account_object.quantity
+        account_object.contacts.update({'order': account_object.price * account_object.quantity})
         account_object.save()
 
-        if self.request.POST.get('tags', ''):
-            tags = self.request.POST.get("tags")
-            splitted_tags = tags.split(",")
-            for t in splitted_tags:
-                tag = Tags.objects.filter(name=t.lower())
-                if tag:
-                    tag = tag[0]
-                else:
-                    tag = Tags.objects.create(name=t.lower())
-                account_object.tags.add(tag)
-        if self.request.POST.getlist('contacts', []):
-            account_object.contacts.add(*self.request.POST.getlist('contacts'))
-        if self.request.POST.getlist('assigned_to', []):
-            account_object.assigned_to.add(*self.request.POST.getlist('assigned_to'))
-        if self.request.FILES.get('account_attachment'):
-            attachment = Attachments()
-            attachment.created_by = self.request.user
-            attachment.file_name = self.request.FILES.get(
-                'account_attachment').name
-            attachment.account = account_object
-            attachment.attachment = self.request.FILES.get(
-                'account_attachment')
-            attachment.save()
-        if self.request.POST.getlist('teams', []):
-            user_ids = Teams.objects.filter(id__in=self.request.POST.getlist('teams')).values_list('users', flat=True)
-            assinged_to_users_ids = account_object.assigned_to.all().values_list('id', flat=True)
-            for user_id in user_ids:
-                if user_id not in assinged_to_users_ids:
-                    account_object.assigned_to.add(user_id)
-        if self.request.POST.getlist('teams', []):
-            account_object.teams.add(*self.request.POST.getlist('teams'))
+        #if self.request.POST.get('tags', ''):
+        #    tags = self.request.POST.get("tags")
+        #    splitted_tags = tags.split(",")
+        #    for t in splitted_tags:
+        #        tag = Tags.objects.filter(name=t.lower())
+        #        if tag:
+        #            tag = tag[0]
+        #        else:
+        #            tag = Tags.objects.create(name=t.lower())
+        #        account_object.tags.add(tag)
+        #if self.request.POST.getlist('contacts', []):
+        #    account_object.contacts.add(*self.request.POST.getlist('contacts'))
+        #if self.request.POST.getlist('assigned_to', []):
+        #    account_object.assigned_to.add(*self.request.POST.getlist('assigned_to'))
+        #if self.request.FILES.get('account_attachment'):
+        #    attachment = Attachments()
+        #    attachment.created_by = self.request.user
+        #    attachment.file_name = self.request.FILES.get(
+        #        'account_attachment').name
+        #    attachment.account = account_object
+        #    attachment.attachment = self.request.FILES.get(
+        #        'account_attachment')
+        #    attachment.save()
+        #if self.request.POST.getlist('teams', []):
+        #    user_ids = Teams.objects.filter(id__in=self.request.POST.getlist('teams')).values_list('users', flat=True)
+        #    assinged_to_users_ids = account_object.assigned_to.all().values_list('id', flat=True)
+        #    for user_id in user_ids:
+        #        if user_id not in assinged_to_users_ids:
+        #            account_object.assigned_to.add(user_id)
+        #if self.request.POST.getlist('teams', []):
+        #    account_object.teams.add(*self.request.POST.getlist('teams'))
 
-        assigned_to_list = list(account_object.assigned_to.all().values_list('id', flat=True))
-        current_site = get_current_site(self.request)
-        recipients = assigned_to_list
-        send_email_to_assigned_user.delay(recipients, account_object.id, domain=current_site.domain,
-            protocol=self.request.scheme)
+        #assigned_to_list = list(account_object.assigned_to.all().values_list('id', flat=True))
+        #current_site = get_current_site(self.request)
+        #recipients = assigned_to_list
+        #send_email_to_assigned_user.delay(recipients, account_object.id, domain=current_site.domain,
+        #    protocol=self.request.scheme)
 
         if self.request.POST.get("savenewform"):
             return redirect("accounts:new_account")
@@ -212,6 +215,8 @@ class CreateAccountView(SalesAccessRequiredMixin, LoginRequiredMixin, CreateView
         return redirect("accounts:list")
 
     def form_invalid(self, form):
+        print("[create account]invalid form")
+        print(form.errors)
         if self.request.is_ajax():
             return JsonResponse({'error': True, 'errors': form.errors})
         return self.render_to_response(
@@ -277,7 +282,7 @@ class AccountDetailView(SalesAccessRequiredMixin, LoginRequiredMixin, DetailView
             "attachments": account_record.account_attachment.all(),
             "opportunity_list": Opportunity.objects.filter(
                 account=account_record),
-            "contacts": account_record.contacts.all(),
+            "contacts": account_record.contacts,
             "users": User.objects.filter(is_active=True).order_by('email'),
             "cases": Case.objects.filter(account=account_record),
             "stages": STAGES,
@@ -329,6 +334,7 @@ class AccountUpdateView(SalesAccessRequiredMixin, LoginRequiredMixin, UpdateView
 
     def form_valid(self, form):
         # Save Account
+        print(form.cleaned_data)
         account_object = form.save(commit=False)
         account_object.save()
         previous_assigned_to_users = list(account_object.assigned_to.all().values_list('id', flat=True))
@@ -343,14 +349,14 @@ class AccountUpdateView(SalesAccessRequiredMixin, LoginRequiredMixin, UpdateView
                 else:
                     tag = Tags.objects.create(name=t.lower())
                 account_object.tags.add(tag)
-        if self.request.POST.getlist('contacts', []):
-            account_object.contacts.clear()
-            account_object.contacts.add(*self.request.POST.getlist('contacts'))
-        if self.request.POST.getlist('assigned_to', []):
-            account_object.assigned_to.clear()
-            account_object.assigned_to.add(*self.request.POST.getlist('assigned_to'))
-        else:
-            account_object.assigned_to.clear()
+        #if self.request.POST.getlist('contacts', []):
+        #    account_object.contacts.clear()
+        #    account_object.contacts.add(*self.request.POST.getlist('contacts'))
+        #if self.request.POST.getlist('assigned_to', []):
+        #    account_object.assigned_to.clear()
+        #    account_object.assigned_to.add(*self.request.POST.getlist('assigned_to'))
+        #else:
+        #    account_object.assigned_to.clear()
         if self.request.FILES.get('account_attachment'):
             attachment = Attachments()
             attachment.created_by = self.request.user
@@ -361,25 +367,25 @@ class AccountUpdateView(SalesAccessRequiredMixin, LoginRequiredMixin, UpdateView
                 'account_attachment')
             attachment.save()
 
-        if self.request.POST.getlist('teams', []):
-            account_object.teams.clear()
-            account_object.teams.add(*self.request.POST.getlist('teams'))
-        else:
-            account_object.teams.clear()
+        #if self.request.POST.getlist('teams', []):
+        #    account_object.teams.clear()
+        #    account_object.teams.add(*self.request.POST.getlist('teams'))
+        #else:
+        #    account_object.teams.clear()
 
 
-        if self.request.POST.getlist('teams', []):
-            user_ids = Teams.objects.filter(id__in=self.request.POST.getlist('teams')).values_list('users', flat=True)
-            assinged_to_users_ids = account_object.assigned_to.all().values_list('id', flat=True)
-            for user_id in user_ids:
-                if user_id not in assinged_to_users_ids:
-                    account_object.assigned_to.add(user_id)
+        #if self.request.POST.getlist('teams', []):
+        #    user_ids = Teams.objects.filter(id__in=self.request.POST.getlist('teams')).values_list('users', flat=True)
+        #    assinged_to_users_ids = account_object.assigned_to.all().values_list('id', flat=True)
+        #    for user_id in user_ids:
+        #        if user_id not in assinged_to_users_ids:
+        #            account_object.assigned_to.add(user_id)
 
         assigned_to_list = list(account_object.assigned_to.all().values_list('id', flat=True))
         current_site = get_current_site(self.request)
         recipients = list(set(assigned_to_list) - set(previous_assigned_to_users))
-        send_email_to_assigned_user.delay(recipients, account_object.id, domain=current_site.domain,
-            protocol=self.request.scheme)
+        #send_email_to_assigned_user.delay(recipients, account_object.id, domain=current_site.domain,
+        #    protocol=self.request.scheme)
 
         if self.request.is_ajax():
             data = {'success_url': reverse_lazy(

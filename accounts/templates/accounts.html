@@ -38,7 +38,7 @@
       </div>
       <div class="md-overlay"></div>
       <span class="d-inline"><a class="primary_btn" href="{% url 'accounts:new_account' %}"><i class="fa fa-plus"></i>
-          Add New Account</a></span>
+          Add New Order</a></span>
     </div>
   </div>
   <div class="filter_row list_filter_row row marl">
@@ -126,11 +126,8 @@
                           <th width="5%">ID</th>
                           <th width="10%">Name</th>
                           <th width="5%">Price</th>
-                          <!--
-                          
-                          <th width="5%">City</th>
-                          <th width="5%">State</th>
-                        -->
+                          <th width="5%">Quantity</th>
+                          <th width="5%">Total</th>
                           <th width="10%">Contact</th>
                           <th width="10%">Created by</th>
                           <th width="20%">Created On</th>
@@ -155,6 +152,8 @@
                           </td>
                           <td>{{ each_account.price }}</a>
                           </td>
+                          <td>{{ each_account.quantity }}</td>
+                          <td>{{ each_account.total }}</td>
                           <td>{{ each_account.contacts.name }}</a>
                           </td>
                           <td>
@@ -172,7 +171,7 @@
                             None
                             {% endif %}
                           </td>
-
+                          
                           <!--
                           <td>{% if each_account.billing_city %}{{ each_account.billing_city }} {% else %} Not specified
                             {% endif %}</td>
