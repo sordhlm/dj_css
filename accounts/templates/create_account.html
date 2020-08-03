@@ -76,6 +76,16 @@
                   <span class="error" id="id__contacts">{{ account_form.contacts.errors }}</span>
                 </div>
               </div>
+              <div class="filter_col col-md-12">
+                <div class="form-group ">
+                  <label for="id_product"
+                    class="required">created_on{% if account_form.created_on.field.required %}<span class="error_marker"
+                      style="color:red">*</span>{% endif %}</label>
+                  <!--<input id="date_picker" type="text" name="created_on">-->
+                  <input type="date" class="form-control datetimepicker-input"
+                                  data-target="#datetimepicker" name="created_on" />
+                </div>
+              </div>
             </div>
             
             <div class="col-md-4">
@@ -132,14 +142,7 @@
                     </div>
                   </div>
                   -->
-                  <div class="filter_col col-md-12">
-                    <div class="form-group ">
-                      <label for="id_product"
-                        class="required">created_on{% if account_form.created_on.field.required %}<span class="error_marker"
-                          style="color:red">*</span>{% endif %}</label>
-                      <input type="date" name="created_on">
-                    </div>
-                  </div>
+                  
                   <div class="filter_col col-md-12">
                     <div class="form-group ">
                       <label for="id_product"
@@ -300,7 +303,7 @@
     $("#id_assigned_to").select2()
     $("#id_teams").select2()
     $('#_id_assigned_to').select2({ disabled: 'readonly' });
-
+    //$("#datetimepicker").datetimepicker();
     // $("#id_assigned_to").change(function () {
     //   $("#id_assigned_to").attr('name', 'assigned_to')
     // })

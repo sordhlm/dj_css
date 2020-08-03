@@ -24,7 +24,7 @@ class Contact(models.Model):
     is_active = models.BooleanField(default=False)
     teams = models.ManyToManyField(Teams, related_name='contact_teams')
     remain = models.FloatField(blank=True, default=0)
-    total = models.FloatField(blank=True, default=0)
+    amount = models.FloatField(blank=True, default=0)
 
     def __str__(self):
         return self.name
@@ -43,8 +43,8 @@ class Contact(models.Model):
             phone=values['phone'],
             address=address_obj,
             created_by=values['user'],
-            score=0,
-            consumption=0
+            remain=0,
+            amount=0
         )
         return suite
 
@@ -53,7 +53,7 @@ class Contact(models.Model):
         if values.get('bill'):
             self.remain = self.remain - values['bill']
         if values.get('order'):
-            self.total += values['order']
+            self.amount += values['order']
             self.remain += values['order']
         self.save()
         return self

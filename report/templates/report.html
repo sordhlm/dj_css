@@ -5,6 +5,7 @@
 {% load thumbnail %}
 {% block extralinks %}
 <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'datatables.net-dt/css/jquery.dataTables.min.css'%}">
 <style>
   .form-group label {
     font-weight: 800;
@@ -22,6 +23,7 @@
     var summary = {{summary | safe}};
 </script>
 <script src="{% static 'js/canvasjs.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'datatables.net/js/jquery.dataTables.min.js'%}"></script>
 <script type="text/javascript" src="{% static 'js/run_report_actions.js' %}"></script>
 
 {% endblock js_block %}
@@ -44,7 +46,7 @@
       </div>
     </div>
   </div>
-  <div id="progress_container" style="margin:0px auto 0 auto; height: 500px; width: 98%; border: 1px solid #ccc;">
+  <div id="progress_container" style="margin:0px 10px 0 10px; height: 500px; width: 98%; ">
     <div class="data_select" style="margin:10px">
       <label class="col-md-1 col-lg-1" for="id_progress_step">Progress Step</label>
       <div class="col-md-1 col-lg-1">
@@ -61,37 +63,43 @@
     <div id="spendContainer" class="spend_rate" style="margin-left:1500px; margin-top:50px; position:absolute; width:400px; height:400px"> </div>
   </div>
   <!--<canvas id="progress_trend" style="margin-left:50px; float:left; width:50%; height:400px"> </canvas>-->
-  <div class="table_container" style="margin:0px auto 0 auto; width: 98%; border: 1px solid #ccc;">
-    <table class="list border-bottom" id="id_table_report" style="width:98%;margin-left:20px">
-    <thead>
-      <tr>
-        <th align="left" width="10%">Contact</th>
-        <th align="left" width="10%">Total</th>
-        <th align="left">Rate</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for contact in contacts %}
-      <tr class="odd">
-        <td valign="top">{{contact.name}}</td>
-        <td valign="top">{{ contact.total }}</td>
-        <td valign="top">
-        <div class="progress">
-          <div class="progress-bar progress-bar-success" style="width:
-            {{contact.paid}}%; background:#5cb85c">
-            {{contact.paid}}% Paid
-          </div>
-          <div class="progress-bar progress-bar-danger" style="width: 
-            {{contact.remain}}%; background: #d9534f;">
-            {{contact.remain}}% Remain
-          </div>
-        </div>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+  <div id="contact_container" style="margin:10px 10px 0 10px; ">
+    <div class="table_container" style="width: 50%; float:left; ">
+      <table class="table table-bordered table-hover"  id="id_table_report" style="width:95%;margin-left:20px">
+        <thead>
+          <tr>
+            <th align="left" width="5%">id</th>
+            <th align="left" width="10%">Contact</th>
+            <th align="left" width="10%">Total</th>
+            <th align="left">Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for contact in contacts %}
+          <tr class="odd">
+            <td valign="top">{{contact.id}}</td>
+            <td valign="top">{{contact.name}}</td>
+            <td valign="top">{{ contact.total }}</td>
+            <td valign="top">
+            <div class="progress">
+              <div class="progress-bar progress-bar-success" style="width:
+                {{contact.paid}}%; background:#5cb85c">
+                {{contact.paid}}% Paid
+              </div>
+              <div class="progress-bar progress-bar-danger" style="width: 
+                {{contact.remain}}%; background: #d9534f;">
+                {{contact.remain}}% Remain
+              </div>
+            </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="contact_chart" style="margin:0px auto 0 auto; width: 50%;">
+    </div>
+  </div>
 </div>
 {% endblock %}
 

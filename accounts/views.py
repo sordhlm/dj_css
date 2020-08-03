@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   TemplateView, UpdateView, View)
+from django.forms.models import model_to_dict
 
 from accounts.forms import (AccountAttachmentForm, AccountCommentForm,
                             AccountForm, EmailForm)
@@ -162,7 +163,7 @@ class CreateAccountView(SalesAccessRequiredMixin, LoginRequiredMixin, CreateView
         print("[create account]valid form")
         account_object = form.save(commit=False)
         account_object.created_by = self.request.user
-        account_object.total = account_object.price * account_object.quantity
+        account_object.amount = account_object.price * account_object.quantity
         account_object.contacts.update({'order': account_object.price * account_object.quantity})
         account_object.save()
 
@@ -336,7 +337,10 @@ class AccountUpdateView(SalesAccessRequiredMixin, LoginRequiredMixin, UpdateView
         # Save Account
         print(form.cleaned_data)
         account_object = form.save(commit=False)
+        account_object.amount = account_object.price * account_object.quantity
+        account_object.contacts.update({'order': account_object.price * account_object.quantity})
         account_object.save()
+        print(model_to_dict(account_object))
         previous_assigned_to_users = list(account_object.assigned_to.all().values_list('id', flat=True))
         account_object.tags.clear()
         if self.request.POST.get('tags', ''):

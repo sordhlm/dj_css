@@ -3,6 +3,7 @@ $(document).ready(function() {
     if(id_progress_step){
         $("#id_progress_step").val(1)
     }
+    var step = $("#id_progress_step").val();
     console.debug("summary", summary)
     console.debug("data_trend", data_trend)
     canvas = document.getElementById("pieContainer");
@@ -33,6 +34,33 @@ $(document).ready(function() {
             update_progress_trend(step)
         }
     });
+    $('#id_table_report').on('click', 'tr', function () {
+        var tr = $(this).closest('tr');
+        var siteTable = $('#id_table_report').DataTable()
+        var row = siteTable.row( tr );
+        console.log("ParentTable click", row.data()[0])
+        console.debug(siteTable)
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else{
+            siteTable.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            get_contact_trend(row.data()[0], step)
+        }
+        
+        //var td = ($(this).closest('td'))
+        //if ( row.child.isShown() ) {
+        //    // This row is already open - close it
+        //    destroyChild(row);
+        //    tr.removeClass('shown');
+        //}
+        //else {
+        //    // Open this row
+        //    createChild(row, gen_detail_table); // class is for background colour
+        //    tr.addClass('shown');
+        //}
+    } ); 
 
 });
 
@@ -46,6 +74,21 @@ function update_progress_trend(step){
     'success': function (data, textStatus, jqXHR) {
       console.debug(data.result)
       gen_progress_trend(data.result, "chartContainer");
+    },
+    'error': function (jqXHR, textStatus, errorThrown) {
+      alert("update_progress_trend fail");
+    }
+  });
+}
+
+function get_contact_trend(id, step){
+  jQuery.ajax({
+    'url': '/report/get_contact_trend/',
+    'type': 'POST',
+    'data': {'id': id, 'step':step},
+    'success': function (data, textStatus, jqXHR) {
+      console.debug(data.result)
+      gen_contact_trend(data.result, "contact_chart");
     },
     'error': function (jqXHR, textStatus, errorThrown) {
       alert("update_progress_trend fail");
@@ -96,7 +139,75 @@ function gen_pie_chart(data, name, container){
     });
     chart1.render();  
 }
-
+function gen_contact_trend(data, container){
+    var total_data = [];
+    var paid_data = [];
+    console.debug(data)
+    if(data.length){
+        for(var i = 0;i < data.length;i++){
+            date = new Date(data[i].date)
+            element = {};
+            element.x = date;
+            element.y = data[i].total;
+            total_data.push(element);
+            element = {};
+            element.x = date;
+            element.y = data[i].paid;
+            paid_data.push(element);      
+        }
+        console.debug(total_data)
+        console.debug(paid_data)
+        //console.debug(running_data)
+        var chart = new CanvasJS.Chart(container, {
+            animationEnabled: true,
+            zoomEnabled: true,
+            //theme: "dark2",
+            title: {
+                text: "Contact Contribution"
+            },
+            axisX: {
+                title: "Day",
+                labelFormatter: function(e){
+                    return CanvasJS.formatDate( e.value, "DD MMM");
+                }
+            },
+            axisY: {
+                //logarithmic: true, //change it to false
+                title: "Total",
+                titleFontColor: "#6D78AD",
+                lineColor: "#6D78AD",
+                gridThickness: 1,
+                lineThickness: 1,
+                //scaleBreaks: {
+                //    autoCalculate: true
+                //}
+                //labelFormatter: addSymbols
+            },
+            legend: {
+                verticalAlign: "top",
+                fontSize: 16,
+                dockInsidePlotArea: true
+            },
+            data: [{
+                type: "line",
+                //xValueFormatString: "####",
+                showInLegend: true,
+                name: "Total",
+                dataPoints: total_data
+            },
+            {
+                type: "line",
+                //xValueFormatString: "####",
+                //axisYType: "secondary",
+                showInLegend: true,
+                name: "Paid",
+                dataPoints: paid_data
+            },
+            ]
+        });
+        chart.render();
+    }
+}
 function gen_progress_trend(data, container){
     var total_data = [];
     var paid_data = [];
@@ -107,35 +218,36 @@ function gen_progress_trend(data, container){
             date = new Date(data[i].date)
             element = {};
             element.x = date;
-            element.y = data[i].total/10000;
+            element.y = data[i].total;
             total_data.push(element);
             element = {};
             element.x = date;
-            element.y = data[i].paid/10000;
+            element.y = data[i].paid;
             paid_data.push(element);    
             element = {};
             element.x = date;
-            element.y = data[i].spend/10000;
+            element.y = data[i].spend;
             spend_data.push(element);    
         }
         console.debug(total_data)
         console.debug(paid_data)
         //console.debug(running_data)
-        var chart = new CanvasJS.Chart("chartContainer", {
+        var chart = new CanvasJS.Chart(container, {
             animationEnabled: true,
             zoomEnabled: true,
             //theme: "dark2",
             title: {
                 text: "Market Growth"
             },
-            //axisX: {
-            //    title: "Year",
-            //    valueFormatString: "####",
-            //    interval: 2
-            //},
+            axisX: {
+                title: "Day",
+                labelFormatter: function(e){
+                    return CanvasJS.formatDate( e.value, "DD MMM");
+                }
+            },
             axisY: {
                 //logarithmic: true, //change it to false
-                title: "Total(/w)",
+                title: "Total",
                 titleFontColor: "#6D78AD",
                 lineColor: "#6D78AD",
                 gridThickness: 1,

@@ -39,7 +39,7 @@ class Account(models.Model):
     #cost = models.FloatField(null=True)
     price = models.FloatField(null=True)
     quantity = models.FloatField(null=True)
-    total = models.FloatField(null=True)
+    amount = models.FloatField(null=True)
     tags = models.ManyToManyField(Tags, blank=True)
     status = models.CharField(
         choices=ACCOUNT_STATUS_CHOICE, max_length=64, default='open')

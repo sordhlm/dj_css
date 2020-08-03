@@ -31,7 +31,7 @@ class ContactForm(forms.ModelForm):
         model = Contact
         fields = (
             'assigned_to', 'name',
-            'phone', 'remain','total',
+            'phone', 'remain','amount',
             'address', 'description'
         )
 

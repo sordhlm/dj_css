@@ -46,7 +46,7 @@ class ContactsListView(SalesAccessRequiredMixin, LoginRequiredMixin, TemplateVie
     template_name = "contacts.html"
 
     def get_queryset(self):
-        queryset = self.model.objects.all().order_by('-total')
+        queryset = self.model.objects.all().order_by('-amount')
         if (self.request.user.role != "ADMIN" and not
                 self.request.user.is_superuser):
             queryset = queryset.filter(
