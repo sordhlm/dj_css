@@ -49,7 +49,7 @@ def gen_trend_data(data, sdate, step):
 def report(request):
     contact_detail = []
     spend_detail = []
-    summary = {'total': 0, 'paid': 0, 'remain': 0, 'spend':0, 'paid_percent':0, 'remain_percent':0}
+    summary = {'total': 0, 'paid': 0, 'remain': 0, 'spend':0, 'paid_percent':0, 'remain_percent':0, 'profit':0}
     if request.method == "GET":
         step = 1
         
@@ -94,23 +94,19 @@ def report(request):
     if len(bills):
         dates.append(bills[0].created_on.date())
     if len(spends):
-        #if sdate:
-        #    sdate = sdate if sdate < spends[0].created_on.date() else spends[0].created_on.date()
-        #else:
-        #    sdate = spends[0].created_on.date()
         dates.append(spends[0].created_on.date())
     if len(accounts):
-        #if sdate:
-        #    sdate = sdate if sdate < accounts[0].created_on.date() else accounts[0].created_on.date()
-        #else:
-        #    sdate = accounts[0].created_on.date()
         dates.append(accounts[0].created_on.date())
     sdate = min(dates)
-
+    
     if sdate:
         data = {'total': accounts, 'paid': bills, 'spend':spends}
         data_trend, summary = gen_trend_data(data, sdate, step)
         summary['remain'] = summary['total'] - summary['paid']
+        summary['profit'] = 0
+        profit_list = Account.objects.values_list('product__cost', 'price', 'quantity')
+        for element in list(profit_list):
+            summary['profit'] += (element[1] - element[0])*element[2]
 
         context_data = {
             'summary':summary,
