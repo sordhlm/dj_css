@@ -22,25 +22,42 @@ def gen_trend_data(data, sdate, step):
     date = sdate
     summary = {}
     data_trend = []
-    while date <= now:
+    if step == 7:
+        sdate = sdate - datetime.timedelta(days=sdate.weekday())
+        edate = now + datetime.timedelta(days=6-now.weekday())
+    elif step == 30:
+        sdate = datetime.datetime(sdate.year, sdate.month, 1)
+        edate = datetime.date(now.year, now.month + 1, 1) - datetime.timedelta(days=1)
+    else:
+        edate = now + datetime.timedelta(days=step)
+    while date <= edate:
         element = {'date':date.strftime("%Y-%m-%d")}
+        profit = 0
         for key in data.keys():
             dlist = data[key]
             idx = 0
-            amount = 0        
+            amount = 0
+            #print(key)    
             for i in range(len(dlist)):
                 if dlist[i].created_on.date() > date:
                     break
                 amount += dlist[i].amount
+                if 'total' in key:
+                    #print("found total")
+                    profit += (dlist[i].price - dlist[i].product.cost)*dlist[i].quantity
+                    #print(profit)
                 idx = i+1
                 #idx = accounts.index(account)
             del dlist[0:idx]
             element[key] = amount
+            
 
             if key in summary.keys():
                 summary[key] += amount
             else:
                 summary[key] = amount
+        #print(element)
+        element['profit'] = profit
         data_trend.append(element)
         date = date + datetime.timedelta(days=step)
     return data_trend, summary

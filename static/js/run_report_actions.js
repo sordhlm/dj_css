@@ -16,7 +16,7 @@ $(document).ready(function() {
     }
     canvas = document.getElementById("chartContainer");
     if(canvas){
-       gen_progress_trend(data_trend,"chartContainer");
+       gen_progress_trend(data_trend);
     }
     var option = {
       responsive: false,
@@ -73,7 +73,7 @@ function update_progress_trend(step){
     'data': {'step': step },
     'success': function (data, textStatus, jqXHR) {
       console.debug(data.result)
-      gen_progress_trend(data.result, "chartContainer");
+      gen_progress_trend(data.result);
     },
     'error': function (jqXHR, textStatus, errorThrown) {
       alert("update_progress_trend fail");
@@ -208,10 +208,15 @@ function gen_contact_trend(data, container){
         chart.render();
     }
 }
-function gen_progress_trend(data, container){
+function gen_progress_trend(data){
     var total_data = [];
     var paid_data = [];
     var spend_data = [];
+    var profit_data = [];
+    var total_sum_data = [];
+    var profit_sum_data = [];
+    var total = 0;
+    var profit = 0;
     console.debug(data)
     if(data.length){
         for(var i = 0;i < data.length;i++){
@@ -227,12 +232,89 @@ function gen_progress_trend(data, container){
             element = {};
             element.x = date;
             element.y = data[i].spend;
-            spend_data.push(element);    
+            spend_data.push(element);  
+            element = {};
+            element.x = date;
+            element.y = data[i].profit;
+            profit_data.push(element); 
+            total = total +  data[i].total;
+            profit = profit +  data[i].profit
+            element = {};
+            element.x = date;
+            element.y = total;
+            total_sum_data.push(element);   
+            element = {};
+            element.x = date;
+            element.y = profit;
+            profit_sum_data.push(element);  
         }
         console.debug(total_data)
         console.debug(paid_data)
         //console.debug(running_data)
-        var chart = new CanvasJS.Chart(container, {
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            zoomEnabled: true,
+            //theme: "dark2",
+            title: {
+                text: "Market Growth"
+            },
+            axisX: {
+                title: "Day",
+                labelFormatter: function(e){
+                    return CanvasJS.formatDate( e.value, "DD MMM");
+                }
+            },
+            axisY: {
+                //logarithmic: true, //change it to false
+                title: "Total",
+                titleFontColor: "#6D78AD",
+                lineColor: "#6D78AD",
+                gridThickness: 1,
+                lineThickness: 1,
+                //scaleBreaks: {
+                //    autoCalculate: true
+                //}
+                //labelFormatter: addSymbols
+            },
+            legend: {
+                verticalAlign: "top",
+                fontSize: 16,
+                dockInsidePlotArea: true
+            },
+            data: [{
+                type: "column",
+                //xValueFormatString: "####",
+                showInLegend: true,
+                name: "Total",
+                dataPoints: total_data
+            },
+            {
+                type: "column",
+                //xValueFormatString: "####",
+                //axisYType: "secondary",
+                showInLegend: true,
+                name: "Paid",
+                dataPoints: paid_data
+            },
+            {
+                type: "column",
+                //xValueFormatString: "####",
+                //axisYType: "secondary",
+                showInLegend: true,
+                name: "Spend",
+                dataPoints: spend_data
+            },
+            {
+                type: "column",
+                //xValueFormatString: "####",
+                //axisYType: "secondary",
+                showInLegend: true,
+                name: "Profit",
+                dataPoints: profit_data
+            }]
+        });
+        chart.render();
+        var sumchart = new CanvasJS.Chart("sumchartContainer", {
             animationEnabled: true,
             zoomEnabled: true,
             //theme: "dark2",
@@ -267,7 +349,7 @@ function gen_progress_trend(data, container){
                 //xValueFormatString: "####",
                 showInLegend: true,
                 name: "Total",
-                dataPoints: total_data
+                dataPoints: total_sum_data
             },
             {
                 type: "line",
@@ -275,17 +357,10 @@ function gen_progress_trend(data, container){
                 //axisYType: "secondary",
                 showInLegend: true,
                 name: "Paid",
-                dataPoints: paid_data
+                dataPoints: profit_sum_data
             },
-            {
-                type: "line",
-                //xValueFormatString: "####",
-                //axisYType: "secondary",
-                showInLegend: true,
-                name: "Spend",
-                dataPoints: spend_data
-            }]
+            ]
         });
-        chart.render();
+        sumchart.render();
     }
 }
