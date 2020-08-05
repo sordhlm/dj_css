@@ -348,7 +348,7 @@ function gen_progress_trend(data){
                 type: "line",
                 //xValueFormatString: "####",
                 showInLegend: true,
-                name: "Total",
+                name: "Sales",
                 dataPoints: total_sum_data
             },
             {
@@ -356,7 +356,7 @@ function gen_progress_trend(data){
                 //xValueFormatString: "####",
                 //axisYType: "secondary",
                 showInLegend: true,
-                name: "Paid",
+                name: "Profit",
                 dataPoints: profit_sum_data
             },
             ]
