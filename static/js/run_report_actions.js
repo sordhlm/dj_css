@@ -110,7 +110,9 @@ function gen_spend_pie(data){
     console.debug('gen_spend_pie',data)
     if(data.length){
         for(var i = 0;i < data.length;i++){
-            pie_data.push({y: data[i].total, label: data[i].name})    
+            if(data[i].total != 0){
+                pie_data.push({y: data[i].total, label: data[i].name})    
+            }
         }
         gen_pie_chart(pie_data, 'Spend', "spendContainer");
     }
@@ -215,8 +217,10 @@ function gen_progress_trend(data){
     var profit_data = [];
     var total_sum_data = [];
     var profit_sum_data = [];
+    var spend_sum_data = [];
     var total = 0;
     var profit = 0;
+    var spend = 0;
     console.debug(data)
     if(data.length){
         for(var i = 0;i < data.length;i++){
@@ -239,6 +243,7 @@ function gen_progress_trend(data){
             profit_data.push(element); 
             total = total +  data[i].total;
             profit = profit +  data[i].profit
+            spend = spend +  data[i].freight;
             element = {};
             element.x = date;
             element.y = total;
@@ -247,6 +252,10 @@ function gen_progress_trend(data){
             element.x = date;
             element.y = profit;
             profit_sum_data.push(element);  
+            element = {};
+            element.x = date;
+            element.y = spend;
+            spend_sum_data.push(element); 
         }
         console.debug(total_data)
         console.debug(paid_data)
@@ -358,6 +367,14 @@ function gen_progress_trend(data){
                 showInLegend: true,
                 name: "Profit",
                 dataPoints: profit_sum_data
+            },
+            {
+                type: "line",
+                //xValueFormatString: "####",
+                //axisYType: "secondary",
+                showInLegend: true,
+                name: "Spend",
+                dataPoints: spend_sum_data
             },
             ]
         });

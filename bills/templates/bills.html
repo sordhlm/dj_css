@@ -114,7 +114,7 @@
                         {% if per_page %}
                         {% paginate per_page open_accounts %}
                         {% else%}
-                        {% paginate 10 bills_list %}
+                        {% paginate 100 bills_list %}
                         {% endif %}
                         {% for each_account in bills_list %}
                         <tr id="account_details{{each_account.id}}" class="text-center">

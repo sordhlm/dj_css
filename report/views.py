@@ -19,17 +19,18 @@ def get_early_date(dates):
 
 def gen_trend_data(data, sdate, step):
     now = datetime.datetime.now().date()
-    date = sdate
+    
     summary = {}
     data_trend = []
     if step == 7:
         sdate = sdate - datetime.timedelta(days=sdate.weekday())
         edate = now + datetime.timedelta(days=6-now.weekday())
     elif step == 30:
-        sdate = datetime.datetime(sdate.year, sdate.month, 1)
+        sdate = datetime.date(sdate.year, sdate.month, 1)
         edate = datetime.date(now.year, now.month + 1, 1) - datetime.timedelta(days=1)
     else:
         edate = now + datetime.timedelta(days=step)
+    date = sdate
     while date <= edate:
         element = {'date':date.strftime("%Y-%m-%d")}
         profit = 0
@@ -101,11 +102,13 @@ def report(request):
     
     accounts = Account.objects.all().order_by("created_on")
     bills = Bill.objects.all().order_by("created_on")  
-    spends = Spend.objects.all().order_by("created_on")    
+    spends = Spend.objects.all().order_by("created_on") 
+    freight = Spend.objects.filter(product__name__contains='运费').order_by("created_on")  
     accounts = list(accounts)
     bills = list(bills)
     spends = list(spends)
-    print(spends)
+    freight = list(freight)
+    print(freight)
     sdate = None
     dates = []
     if len(bills):
@@ -117,11 +120,14 @@ def report(request):
     sdate = min(dates)
     
     if sdate:
-        data = {'total': accounts, 'paid': bills, 'spend':spends}
+        data = {'total': accounts, 'paid': bills, 'spend':spends, 'freight':freight}
         data_trend, summary = gen_trend_data(data, sdate, step)
         summary['remain'] = summary['total'] - summary['paid']
         summary['profit'] = 0
         profit_list = Account.objects.values_list('product__cost', 'price', 'quantity')
+        for i in data_trend:
+            if i['profit'] != 0:
+                print("%s  %d"%(i['date'],i['profit']))
         for element in list(profit_list):
             summary['profit'] += (element[1] - element[0])*element[2]
 
