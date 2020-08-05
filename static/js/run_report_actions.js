@@ -256,7 +256,7 @@ function gen_progress_trend(data){
             zoomEnabled: true,
             //theme: "dark2",
             title: {
-                text: "Market Growth"
+                text: "Period Detail"
             },
             axisX: {
                 title: "Day",
@@ -319,7 +319,7 @@ function gen_progress_trend(data){
             zoomEnabled: true,
             //theme: "dark2",
             title: {
-                text: "Market Growth"
+                text: "Market Growth Trend"
             },
             axisX: {
                 title: "Day",
