@@ -373,7 +373,7 @@ function gen_progress_trend(data){
                 //xValueFormatString: "####",
                 //axisYType: "secondary",
                 showInLegend: true,
-                name: "Spend",
+                name: "Freight",
                 dataPoints: spend_sum_data
             },
             ]
