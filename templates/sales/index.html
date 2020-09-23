@@ -78,8 +78,8 @@
                 <thead>
                   <tr>
                     <th width="30%">Name</th>
-                    <th width="30%">Tags</th>
-                    <th width="40%">Assigned To</th>
+                    <th width="30%">Contact</th>
+                    <th width="40%">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -90,6 +90,13 @@
                       <a href="{% url 'accounts:view_account' account.id %}">{{account.name}}</a>
                     </div>
                     </td>
+                    <td>
+                      {{account.contacts.name}}
+                    </td>
+                    <td>
+                      {{account.amount}}
+                    </td>
+                    <!--
                     <td style="display: block;">
                       {% for tag in account.tags.all|slice:'3' %}
                       <span class="text-left color{{forloop.counter}} tag_class_acc" id="list_tag"
@@ -132,6 +139,7 @@
                       {% endif %}
                       {% endwith %}
                     </td>
+                  -->
                   </tr>
                   {% endfor %}
                 </tbody>
